@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html xmlns:form="http://www.w3.org/1999/html">
+<head>
+    <title>Shop Compare</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="login_page"/>
+    <link href="/css/loginPage.css" rel="stylesheet"/>
+</head>
+<body>
+<script src="js/formValidation.js"></script>
+<B>Welcome to Shop-Compare</B>
+<form name="loginForm" id="loginForm" method="post" action="login">
+    <label for="username">User Name: </label>
+    <input id="username" name="username" type="text" aria-label="login" pattern="[\w\d]+" minlength="3" maxlength="20"
+           onkeyup="validateForm()"/><br>
+    <label for="password">Password: </label>
+    <input id="password" name="password" type="password" aria-label="password" minlength="8"/>
+    <input type="submit" id="loginBtn" name="loginBtn" value="Login"/>
+</form>
+</body>
+
+</html>

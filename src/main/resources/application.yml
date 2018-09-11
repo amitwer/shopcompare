@@ -1,0 +1,7 @@
+logging:
+  level:
+    sun.rmi.transport: info
+    o.s.*: info
+    o.apache.tomcat: info
+    o.apache.tomcat.util.digester.Digester: info
+    .*: debug

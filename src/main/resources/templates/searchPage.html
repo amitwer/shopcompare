@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Search for product</title>
+    <meta name="search_page"/>
+</head>
+<body>
+<H1>THIS IS A SEARCH PAGE</H1>
+
+<form name="product-name-form" id="product-name-form" action="searchProductName" method="post" target="products">
+    <input type="text" id="product-name">
+    <input type="submit" id="searchProductBtn" name="searchProductBtn" th:value="Login"/>
+</form>
+
+
+<iframe id="products" name="products" th:height="90vh">
+
+</iframe>
+</body>
+</html>
