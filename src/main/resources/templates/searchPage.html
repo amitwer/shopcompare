@@ -9,8 +9,14 @@
 <H1>THIS IS A SEARCH PAGE</H1>
 
 <form name="product-name-form" id="product-name-form" action="searchProductName" method="post" target="products">
+    <label for="product-name">Product name</label>
     <input type="text" id="product-name">
-    <input type="submit" id="searchProductBtn" name="searchProductBtn" th:value="Login"/>
+    <label for="city">City</label>
+    <select id="city">
+        <option th:value="0" text="Select City"/>
+        <option th:value="ירושלים">ירושלים</option>
+    </select>
+    <input type="submit" id="searchProductBtn" name="searchProductBtn" th:value="Search"/>
 </form>
 
 
