@@ -2,6 +2,8 @@ package shopcompare;
 
 import org.approvaltests.Approvals;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests the client side view of the system: Verify that the mapped views actually return HTML pages, and that the status codes are as defined.
  */
+@Tags({@Tag("Short"),@Tag("All")})
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ShopCompareControllerClientSideTest {
+class ShopCompareControllerClientSideTest {
 
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
     @LocalServerPort
@@ -28,11 +31,11 @@ public class ShopCompareControllerClientSideTest {
     private String baseAddress;
 
     @BeforeEach
-    public void setup(){
+    void setup(){
         this.baseAddress="http://localhost:"+port+"/";
     }
     @Test
-    public void testMainPageController(){
+    void testMainPageController(){
         ResponseEntity<String> forEntity = testRestTemplate.getForEntity(baseAddress, String.class);
         String htmlPage = forEntity.getBody();
         assertThat(HttpStatus.OK).as("Http status").isEqualTo(forEntity.getStatusCode());
@@ -41,25 +44,25 @@ public class ShopCompareControllerClientSideTest {
     }
 
     @Test
-    public void testSuccessfulLogin(){
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap();
-        params.add("login","Amit");
+    void testSuccessfulLogin(){
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("username","Amit");
         params.add("password","wertheimer");
-        baseAddress = "http://localhost:" + port + "/";
+//        baseAddress = "http://localhost:" + port + "/";
         ResponseEntity<String> forEntity = testRestTemplate.postForEntity(baseAddress + "login", params,String.class);
         String htmlPage = forEntity.getBody();
-        assertThat(HttpStatus.OK).as("Http status").isEqualTo(forEntity.getStatusCode());
+        assertThat(forEntity.getStatusCode()).as("Http status").isEqualTo(HttpStatus.OK);
         assertThat(htmlPage).contains("<meta name=\"search_page\"/>");
 //        Approvals.verify(htmlPage);
     }
 
     @Test
-    public void testSuccessfulProductSearch(){
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap();
+    void testSuccessfulProductSearch(){
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("product_name","product");
         ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(baseAddress + "searchProductName", params, String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).contains("<meta name=\"product_search_results\"/>");
+        assertThat(responseEntity.getBody()).contains("<meta id=\"product_search_results\"");
 
     }
 }

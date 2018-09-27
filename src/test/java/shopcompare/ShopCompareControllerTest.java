@@ -1,34 +1,36 @@
 package shopcompare;
 
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 import shopcompare.exceptions.AccessForbiddenException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-
+@Tags({@Tag("Short"),@Tag("All")})
 class ShopCompareControllerTest {
 
 
     @Test
-    public void mainPageIsLogin(){
+    void mainPageIsLogin(){
         ShopCompareController shopCompareController = getShopCompareController();
         assertThat(shopCompareController.mainPage()).isEqualTo("loginPage");
     }
 
     @Test
-    public void loginSuccessful(){
+    void loginSuccessful(){
         assertThat(getShopCompareController().login("amit","wertheimer")).isEqualTo("searchPage");
     }
 
     @Test
-    public void loginFailed(){
+    void loginFailed(){
         ShopCompareController shopCompareController = getShopCompareController();
         assertThatThrownBy(()->shopCompareController.login("notAmit","notWertheimer")).as("Invalid credentials").isInstanceOf(AccessForbiddenException.class);
     }
 
     @Test
-    public void searchProductName(){
+    void searchProductName(){
         ShopCompareController shopCompareController = getShopCompareController();
         assertThat(shopCompareController.searchProductName("name")).isEqualTo("productSearchResults");
     }
