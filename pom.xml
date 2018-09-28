@@ -80,6 +80,18 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.11.3</version>
+            <scope>test</scope>
+        </dependency>
+
 
     </dependencies>
 
@@ -123,7 +135,6 @@
                 <version>${allure.plugin.version}</version>
                 <configuration>
                     <reportVersion>2.4.1</reportVersion>
-                    <outputDirectory>amit</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

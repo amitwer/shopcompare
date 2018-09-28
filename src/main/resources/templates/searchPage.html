@@ -13,8 +13,10 @@
     <input type="text" id="product-name">
     <label for="city">City</label>
     <select id="city">
-        <option th:value="0" text="Select City"/>
-        <option th:value="ירושלים">ירושלים</option>
+        <option>Select city</option>
+        <option th:each="city : ${cities}"
+                th:value="${city}"
+                th:text="${city}">${city}</option>
     </select>
     <input type="submit" id="searchProductBtn" name="searchProductBtn" th:value="Search"/>
 </form>

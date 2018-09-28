@@ -32,6 +32,7 @@ public class BasicSanityTest {
     @BeforeEach
     void setup() {
         driver = new ChromeDriver();
+        driver.manage().window().maximize();
     }
 
     @AfterEach

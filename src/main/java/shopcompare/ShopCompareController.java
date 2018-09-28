@@ -1,21 +1,23 @@
 package shopcompare;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import shopcompare.exceptions.AccessForbiddenException;
+import shopcompare.services.CityService;
 
+@SuppressWarnings("SameReturnValue")
 @Controller
 public class ShopCompareController {
 
+    private final CityService cityService;
 
-    @GetMapping("/greeting")
-    public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "greeting";
+    @Autowired
+    public ShopCompareController(CityService cityService) {
+        this.cityService = cityService;
     }
 
     @RequestMapping("/")
@@ -24,8 +26,9 @@ public class ShopCompareController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
-        if (username.equalsIgnoreCase("amit") && password.equals("wertheimer")) {
+    public String login(@RequestParam String username, @RequestParam String password, Model model) {
+        if (username.equalsIgnoreCase("Amit") && password.equals("wertheimer")) {
+            model.addAttribute("cities", cityService.getCities());
             return "searchPage";
         }
         throw new AccessForbiddenException();
@@ -38,7 +41,7 @@ public class ShopCompareController {
 
 
     @RequestMapping("**")
-    public String catchAll(){
+    public String catchAll() {
         throw new AccessForbiddenException();
     }
 }
