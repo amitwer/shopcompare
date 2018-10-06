@@ -91,7 +91,7 @@ class ShopCompareControllerClientSideTest {
 
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "test cities come from Java [{index}] {arguments}")
     @MethodSource("testCitiesAreFromJavaProvider")
     void testCitiesAreFromJava(List<String> expectedCities) {
         Mockito.when(cityService.getCities()).thenReturn(expectedCities);
