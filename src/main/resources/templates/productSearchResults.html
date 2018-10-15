@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Search for product</title>
@@ -8,8 +8,14 @@
 <body>
 <H1>This this is a product search results page</H1>
 
-<form name="product-name-form" id="product-name-form" action="">
-    <label for="product-name">Product name</label><input type="text" id="product-name"/>
+<form name="product-name-form" id="product-name-form" action="getPrices" method="post">
+    <label for="matching_products_list">Product name</label>
+    <select id="matching_products_list" name="selectedProducts" multiple="multiple" th:size="4">
+        <option value="1">במבה</option>
+        <option value="2">ביסלי</option>
+        <option value="3">אפרופו</option>
+    </select>
+    <input type="submit" id="get_price_btn" value="Get Prices"/>
 </form>
 
 </body>

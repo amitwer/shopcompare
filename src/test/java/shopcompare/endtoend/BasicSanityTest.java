@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import shopcompare.endtoend.businessflows.SearchProductsFlows;
-import shopcompare.endtoend.pageobjects.ProductSearchResultPage;
+import shopcompare.endtoend.pageobjects.TableWithPricesPage;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,8 +42,8 @@ public class BasicSanityTest {
 
     @Test
     void testFullSearchFlow() {
-        ProductSearchResultPage searchResultPage = searchProductsFlows.searchForProduct(driver, "במבה", port);
-        Assertions.assertThat(searchResultPage.isInPage()).as("In product search results page").isTrue();
+        TableWithPricesPage tableWithPricesPage = searchProductsFlows.searchForProduct(driver, "במבה", port);
+        Assertions.assertThat(tableWithPricesPage.isInPage()).as("In Final price results page").isTrue();
 
     }
 

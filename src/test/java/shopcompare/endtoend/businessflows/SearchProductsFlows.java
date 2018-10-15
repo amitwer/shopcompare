@@ -7,13 +7,14 @@ import shopcompare.Reporter;
 import shopcompare.endtoend.pageobjects.LoginPage;
 import shopcompare.endtoend.pageobjects.ProductSearchResultPage;
 import shopcompare.endtoend.pageobjects.SearchPage;
+import shopcompare.endtoend.pageobjects.TableWithPricesPage;
 
 @Service
 public class SearchProductsFlows {
 
 
     @Step("Search for {productName}")
-    public ProductSearchResultPage searchForProduct(WebDriver driver, String productName, int port){
+    public TableWithPricesPage searchForProduct(WebDriver driver, String productName, int port) {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.open(port);
         Reporter.addScreenShot(driver,"Login page");
@@ -23,7 +24,10 @@ public class SearchProductsFlows {
         searchPage.searchProductNameAndCity(productName,"ירושלים" );
         driver.switchTo().frame("products");
         Reporter.addScreenShot(driver, "Search results");
-        return new ProductSearchResultPage(driver);
+        ProductSearchResultPage productSearchResultPage = new ProductSearchResultPage(driver);
+        TableWithPricesPage tableWithPricesPage = productSearchResultPage.chooseProductByIndex(0);
+        Reporter.addScreenShot(driver, "Table with prices");
+        return tableWithPricesPage;
 
 
     }

@@ -23,13 +23,15 @@ class ShopCompareControllerTest {
 
     @Test
     void loginSuccessful(){
-        assertThat(getShopCompareController().login("amit","wertheimer",new ExtendedModelMap())).isEqualTo("searchPage");
+        assertThat(getShopCompareController().login("amit", "wertheimer", new ExtendedModelMap())).isEqualTo("MainApplicationPage");
     }
 
     @Test
     void loginFailed(){
         ShopCompareController shopCompareController = getShopCompareController();
-        assertThatThrownBy(()->shopCompareController.login("notAmit","notWertheimer",new ExtendedModelMap())).as("Invalid credentials").isInstanceOf(AccessForbiddenException.class);
+        assertThatThrownBy(() -> shopCompareController.login("notAmit", "notWertheimer", new ExtendedModelMap()))
+                .as("Invalid credentials")
+                .isInstanceOf(AccessForbiddenException.class);
     }
 
     @Test

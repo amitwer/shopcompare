@@ -67,7 +67,7 @@ class ShopCompareControllerClientSideTest {
     void testSuccessfulLogin() {
         ResponseEntity<String> loginResponse = login();
         String htmlPage = loginResponse.getBody();
-        assertThat(htmlPage).contains("<meta name=\"search_page\"/>");
+        assertThat(htmlPage).contains("<meta name=\"main_application_page\"/>");
 //        Approvals.verify(htmlPage);
     }
 
@@ -97,7 +97,10 @@ class ShopCompareControllerClientSideTest {
         Mockito.when(cityService.getCities()).thenReturn(expectedCities);
         ResponseEntity<String> loginResponse = login();
         Document html = Jsoup.parse(Optional.ofNullable(loginResponse.getBody()).orElseThrow(()->new IllegalStateException("Body was empty")));
-        List<String> actualCities = html.getElementById("city").children().stream().map(Element::val).filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+        List<String> actualCities = html.getElementById("city").children().stream()
+                .map(Element::val)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.toList());
         assertThat(actualCities).containsExactlyInAnyOrderElementsOf(expectedCities);
     }
 

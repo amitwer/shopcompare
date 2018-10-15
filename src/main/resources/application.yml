@@ -5,3 +5,8 @@ logging:
     o.apache.tomcat: info
     o.apache.tomcat.util.digester.Digester: info
     .*: debug
+
+server:
+  tomcat:
+    accesslog:
+      enabled: true
