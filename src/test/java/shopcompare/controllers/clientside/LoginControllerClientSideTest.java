@@ -1,7 +1,6 @@
-package shopcompare;
+package shopcompare.controllers.clientside;
 
 import org.apache.commons.lang3.StringUtils;
-import org.approvaltests.Approvals;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -39,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Tags({@Tag("Short"), @Tag("All")})
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ShopCompareControllerClientSideTest {
+class LoginControllerClientSideTest {
 
     @MockBean
     private CityService cityService;
@@ -54,14 +53,6 @@ class ShopCompareControllerClientSideTest {
         this.baseAddress = "http://localhost:" + port + "/";
     }
 
-    @Test
-    void testMainPageController() {
-        ResponseEntity<String> forEntity = testRestTemplate.getForEntity(baseAddress, String.class);
-        String htmlPage = forEntity.getBody();
-        assertThat(HttpStatus.OK).as("Http status").isEqualTo(forEntity.getStatusCode());
-        assertThat(htmlPage).contains("<meta name=\"login_page\"/>");
-        Approvals.verify(htmlPage);
-    }
 
     @Test
     void testSuccessfulLogin() {
@@ -81,15 +72,6 @@ class ShopCompareControllerClientSideTest {
         return loginResponse;
     }
 
-    @Test
-    void testSuccessfulProductSearch() {
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.add("product_name", "product");
-        ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(baseAddress + "searchProductName", params, String.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).contains("<meta id=\"product_search_results\"");
-
-    }
 
     @ParameterizedTest(name = "test cities come from Java [{index}] {arguments}")
     @MethodSource("testCitiesAreFromJavaProvider")

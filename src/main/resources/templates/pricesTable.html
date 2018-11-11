@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Search for product</title>
@@ -18,11 +18,13 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <td>במבה</td>
-        <td>123456</td>
-        <td>רמי לוי תלפיות</td>
-        <td>11.2</td>
+    <!--/*@thymesVar id="prices" type="java.util.List"*/-->
+    <tr th:each="price : ${prices}" th:value="${price}">
+        <!--/*@thymesVar id="price" type="shopcompare.datacontainers.PriceResult"*/-->
+        <td th:text="${price.getProductName()}"></td>
+        <td th:text="${price.barcode}"></td>
+        <td th:text="${price.getStore()}"></td>
+        <td th:text="${price.getPrice()}"></td>
     </tr>
     </tbody>
 </table>
