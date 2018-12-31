@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Tags({@Tag("Short"), @Tag("All"), @Tag("Search-Products")})
 class SearchPricesControllerTest {
@@ -33,6 +33,7 @@ class SearchPricesControllerTest {
         );
     }
 
+
     @BeforeEach
     void init() {
         model = new ExtendedModelMap();
@@ -43,7 +44,6 @@ class SearchPricesControllerTest {
         SearchPricesController searchPricesController = getSearchPricesController(null);
         String pageName = searchPricesController.getPrices(null, model);
         assertThat(pageName).isEqualTo("pricesTable");
-
     }
 
     @ParameterizedTest(name = "[{index}] Search prices is dynamic: {arguments}")
@@ -56,6 +56,7 @@ class SearchPricesControllerTest {
         Object prices = model.get("prices");
         assertThat(prices).isNotNull().isInstanceOf(List.class);
         assertThat(prices).isEqualTo(expectedPrices);
+        verify(pricesService, times(1)).getPrices();
     }
 
     private SearchPricesController getSearchPricesController(PricesService pricesService) {
