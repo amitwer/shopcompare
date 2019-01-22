@@ -17,7 +17,7 @@
 
     <properties>
         <spring-data-releasetrain.version>Fowler-SR2</spring-data-releasetrain.version>
-        <selenium.version>3.14.0</selenium.version>
+        <selenium.version>3.141.59</selenium.version>
         <aspectj.version>1.9.1</aspectj.version>
         <java.version>1.8</java.version>
         <allure-junit5.version>2.7.0</allure-junit5.version>
@@ -26,6 +26,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
+        </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
@@ -94,7 +99,7 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>3.0.0</version>
+            <version>3.2.0</version>
             <scope>test</scope>
         </dependency>
 

@@ -7,3 +7,5 @@ server:
   tomcat:
     accesslog:
       enabled: true
+superget:
+  api-url: http://api.superget.co.il
