@@ -1,12 +1,12 @@
 package shopcompare.controllers.clientside;
 
-import org.assertj.core.api.Assertions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,7 +18,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import shopcompare.datacontainers.PriceResult;
 import shopcompare.services.PricesService;
 
@@ -29,7 +28,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests the client side view of the system: Verify that the mapped views actually return HTML pages, and that the status codes are as defined.
@@ -57,9 +61,17 @@ class SearchPricesControllerClientSideTest {
     @ParameterizedTest
     @MethodSource("pricesAreFromModelDataProvider")
     void pricesAreFromModelData(List<PriceResult> expectedPrices) throws Exception {
-        when(pricesService.getPrices()).thenReturn(expectedPrices);
-        ResultActions responsePage = mockMvc.perform(MockMvcRequestBuilders.post("/getPrices").param("selectedProducts", Arrays.toString(new String[]{"dummy", "dummy"})));
+        when(pricesService.getPrices(any(), any())).thenReturn(expectedPrices);
+        ResultActions responsePage = mockMvc.perform(post("/getPrices").param("selectedProducts", Arrays.toString(new String[]{"dummy", "dummy"})));
         responsePage.andExpect(result -> validatePrices(result, expectedPrices));
+    }
+
+    @Test
+    void testDirectAccess() throws Exception {
+        String html = mockMvc.perform(get("/directAccess")).andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+        Element metaId = Jsoup.parse(html).getElementById("price_table_meta_id");
+        assertThat(metaId).isNotNull();
     }
 
     private void validatePrices(MvcResult mvcResult, List<PriceResult> expectedPrices) throws UnsupportedEncodingException {
@@ -68,7 +80,7 @@ class SearchPricesControllerClientSideTest {
         Element pricesTable = parsedHtml.body().getElementById("prices_table");
         Elements tableBody = pricesTable.getElementsByTag("tbody");
         List<PriceResult> rows = tableBody.iterator().next().children().stream().map(this::transformRowToPrice).collect(Collectors.toList());
-        Assertions.assertThat(rows).containsExactlyInAnyOrderElementsOf(expectedPrices);
+        assertThat(rows).containsExactlyInAnyOrderElementsOf(expectedPrices);
 
     }
 

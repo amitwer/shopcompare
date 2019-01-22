@@ -27,6 +27,6 @@ public class LoginPage extends BasePage {
     }
 
     public void open(int port) {
-        driver.get("http://localhost:"+port+"/");
+        driver.get("http://localhost:" + port + "/");
     }
 }

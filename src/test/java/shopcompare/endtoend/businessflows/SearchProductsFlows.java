@@ -17,11 +17,11 @@ public class SearchProductsFlows {
     public TableWithPricesPage searchForProduct(WebDriver driver, String productName, int port) {
         LoginPage loginPage = new LoginPage(driver);
         loginPage.open(port);
-        Reporter.addScreenShot(driver,"Login page");
-        loginPage.login("amit","wertheimer");
-        Reporter.addScreenShot(driver,"After login");
+        Reporter.addScreenShot(driver, "Login page");
+        loginPage.login("amit", "wertheimer");
+        Reporter.addScreenShot(driver, "After login");
         SearchPage searchPage = new SearchPage(driver);
-        searchPage.searchProductNameAndCity(productName,"ירושלים" );
+        searchPage.searchProductNameAndCity(productName, "ירושלים");
         driver.switchTo().frame("products");
         Reporter.addScreenShot(driver, "Search results");
         ProductSearchResultPage productSearchResultPage = new ProductSearchResultPage(driver);

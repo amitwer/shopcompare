@@ -10,8 +10,8 @@ import org.openqa.selenium.WebDriver;
 @Slf4j
 public class Reporter {
     @Step
-    public static void log(String s){
-       log.info(s);
+    public static void log(String s) {
+        log.info(s);
     }
 
     /**
@@ -27,9 +27,10 @@ public class Reporter {
         }
 
     }
+
     @SuppressWarnings({"UnusedReturnValue", "unused"})
     @Attachment(value = "Screenshot {label}", type = "image/png")
-    private  static byte[] takeScreenShort(TakesScreenshot driver, String label) {
+    private static byte[] takeScreenShort(TakesScreenshot driver, String label) {
         return driver.getScreenshotAs(OutputType.BYTES);
     }
 }

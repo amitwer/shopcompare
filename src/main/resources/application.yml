@@ -9,3 +9,12 @@ server:
       enabled: true
 superget:
   api-url: http://api.superget.co.il
+direct:
+  stores:
+    1
+    2
+    3
+  products:
+    a
+    b
+    c

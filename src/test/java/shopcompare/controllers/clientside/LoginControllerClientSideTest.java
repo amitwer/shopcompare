@@ -40,19 +40,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LoginControllerClientSideTest {
 
-    @MockBean
-    private CityService cityService;
-
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
     @LocalServerPort
     int port;
+    @MockBean
+    private CityService cityService;
     private String baseAddress;
+
+    private static Stream<List<String>> testCitiesAreFromJavaProvider() {
+        return Stream.of(Arrays.asList("City1", "City2"),
+                Arrays.asList("City1", "City2", "City3")
+        );
+    }
 
     @BeforeEach
     void setup() {
         this.baseAddress = "http://localhost:" + port + "/";
     }
-
 
     @Test
     void testSuccessfulLogin() {
@@ -72,23 +76,16 @@ class LoginControllerClientSideTest {
         return loginResponse;
     }
 
-
     @ParameterizedTest(name = "test cities come from Java [{index}] {arguments}")
     @MethodSource("testCitiesAreFromJavaProvider")
     void testCitiesAreFromJava(List<String> expectedCities) {
         Mockito.when(cityService.getCities()).thenReturn(expectedCities);
         ResponseEntity<String> loginResponse = login();
-        Document html = Jsoup.parse(Optional.ofNullable(loginResponse.getBody()).orElseThrow(()->new IllegalStateException("Body was empty")));
+        Document html = Jsoup.parse(Optional.ofNullable(loginResponse.getBody()).orElseThrow(() -> new IllegalStateException("Body was empty")));
         List<String> actualCities = html.getElementById("city").children().stream()
                 .map(Element::val)
                 .filter(StringUtils::isNotEmpty)
                 .collect(Collectors.toList());
         assertThat(actualCities).containsExactlyInAnyOrderElementsOf(expectedCities);
-    }
-
-    private static Stream<List<String>> testCitiesAreFromJavaProvider() {
-        return Stream.of(Arrays.asList("City1", "City2"),
-                Arrays.asList("City1", "City2", "City3")
-        );
     }
 }

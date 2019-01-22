@@ -15,14 +15,14 @@ import shopcompare.endtoend.pageobjects.TableWithPricesPage;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 
-@Tags({@Tag("Long"),@Tag("All")})
+@Tags({@Tag("Long"), @Tag("All")})
 public class BasicSanityTest {
 
-    private ChromeDriver driver;
     @LocalServerPort
     int port;
     @Autowired
     SearchProductsFlows searchProductsFlows;
+    private ChromeDriver driver;
 
     @BeforeAll
     static void setupBrowser() {
@@ -36,7 +36,7 @@ public class BasicSanityTest {
     }
 
     @AfterEach
-    void teardown(){
+    void teardown() {
         driver.quit();
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 public class CityService {
-    public List<String> getCities(){
+    public List<String> getCities() {
         return Collections.singletonList("ירושלים");
     }
 }

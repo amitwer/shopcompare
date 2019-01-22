@@ -26,12 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ShopCompareControllerClientSideTest {
 
-    @MockBean
-    private CityService cityService;
-
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
     @LocalServerPort
     int port;
+    @MockBean
+    private CityService cityService;
     private String baseAddress;
 
     @BeforeEach

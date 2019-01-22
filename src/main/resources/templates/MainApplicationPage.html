@@ -8,17 +8,18 @@
 <body>
 <H1>THIS IS A SEARCH PAGE</H1>
 
-<form name="product-name-form" id="product-name-form" action="searchProductName" method="post" target="products">
+<form action="searchProductName" id="product-name-form" method="post" name="product-name-form" target="products">
     <label for="product-name">Product name</label>
-    <input type="text" id="product-name">
+    <input id="product-name" type="text">
     <label for="city">City</label>
     <select id="city">
         <option>Select city</option>
         <option th:each="city : ${cities}"
-                th:value="${city}"
-                th:text="${city}">${city}</option>
+                th:text="${city}"
+                th:value="${city}">${city}
+        </option>
     </select>
-    <input type="submit" id="searchProductBtn" name="searchProductBtn" th:value="Search"/>
+    <input id="searchProductBtn" name="searchProductBtn" th:value="Search" type="submit"/>
 </form>
 
 

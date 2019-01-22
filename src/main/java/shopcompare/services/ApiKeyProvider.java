@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ApiKeyProvider {
 
-    @Value("${api-key}")
+    @Value("${api-key:}")
     private String apiKey;
 
     public String getApiKey() {

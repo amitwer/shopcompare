@@ -21,7 +21,7 @@ label {
     font-size: 1.2rem;
 }
 
-input:invalid{
+input:invalid {
     content: '✖';
     color: #f00;
     padding-left: 5px;

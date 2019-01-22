@@ -11,9 +11,8 @@ import org.springframework.ui.ExtendedModelMap;
 import shopcompare.datacontainers.PriceResult;
 import shopcompare.services.PricesService;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +22,7 @@ import static org.mockito.Mockito.*;
 class SearchPricesControllerTest {
 
     private ExtendedModelMap model;
+    private PricesService pricesService;
 
     private static Stream<List<PriceResult>> pricesToTest() {
         return Stream.of(
@@ -37,11 +37,12 @@ class SearchPricesControllerTest {
     @BeforeEach
     void init() {
         model = new ExtendedModelMap();
+        pricesService = Mockito.mock(PricesService.class);
     }
 
     @Test
     void searchPriceReturnsCorrectPage() {
-        SearchPricesController searchPricesController = getSearchPricesController(null);
+        SearchPricesController searchPricesController = getSearchPricesController(null, null, null);
         String pageName = searchPricesController.getPrices(null, model);
         assertThat(pageName).isEqualTo("pricesTable");
     }
@@ -49,20 +50,40 @@ class SearchPricesControllerTest {
     @ParameterizedTest(name = "[{index}] Search prices is dynamic: {arguments}")
     @MethodSource("pricesToTest")
     void searchPriceIsDynamic(List<PriceResult> expectedPrices) {
-        PricesService pricesService = Mockito.mock(PricesService.class);
-        SearchPricesController searchPricesController = getSearchPricesController(pricesService);
-        when(pricesService.getPrices()).thenReturn(expectedPrices);
+
+        SearchPricesController searchPricesController = getSearchPricesController(pricesService, null, null);
+        when(pricesService.getPrices(any(), any())).thenReturn(expectedPrices);
         searchPricesController.getPrices(null, model);
         Object prices = model.get("prices");
         assertThat(prices).isNotNull().isInstanceOf(List.class);
         assertThat(prices).isEqualTo(expectedPrices);
-        verify(pricesService, times(1)).getPrices();
+        verify(pricesService, times(1)).getPrices(any(), any());
     }
 
-    private SearchPricesController getSearchPricesController(PricesService pricesService) {
+    @Test
+    void testDirectAccessReturnsPricesTable() {
+        SearchPricesController searchPricesController = getSearchPricesController(pricesService, null, null);
+        String page = searchPricesController.directHardCodedSearch();
+        assertThat(page).isEqualTo("pricesTable");
+    }
+
+    @Test
+    void testDirectAccessWithPredefinedStorsAndProducts() {
+        Set<String> storeIds = Stream.of("986", "111", "123").collect(Collectors.toSet());
+        Set<String> productIds = Stream.of("777", "123").collect(Collectors.toSet());
+
+        when(pricesService.getPrices(anySet(), anySet())).thenReturn(new LinkedList<>());
+        SearchPricesController searchPricesController = getSearchPricesController(pricesService, storeIds, productIds);
+        searchPricesController.directHardCodedSearch();
+
+    }
+
+
+    private SearchPricesController getSearchPricesController(PricesService pricesService, Set<String> storeIds, Set<String> productIds) {
         if (Objects.isNull(pricesService)) {
-            return new SearchPricesController(new PricesService());
+            pricesService = new PricesService();
         }
-        return new SearchPricesController(pricesService);
+        SearchPricesController searchPricesController = new SearchPricesController(pricesService, storeIds, productIds);
+        return searchPricesController;
     }
 }
