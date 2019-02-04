@@ -2,14 +2,15 @@ package shopcompare.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import shopcompare.beans.DirectSearchParams;
 import shopcompare.services.PricesService;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,14 +22,14 @@ import java.util.Set;
 public class SearchPricesController {
 
     private final PricesService pricesService;
-    private Set<String> directStoreIds;
-    private Set<String> directProdcutIds;
+    private final Set<String> directStoreIds;
+    private final Set<String> directProductIds;
 
     @Autowired
-    public SearchPricesController(PricesService pricesService, @Value("${direct.stores}") Set<String> directStoreIds, @Value("${direct.products}") Set<String> directProdcutIds) {
+    public SearchPricesController(PricesService pricesService, DirectSearchParams directSearchParams) {
         this.pricesService = pricesService;
-        this.directStoreIds = directStoreIds;
-        this.directProdcutIds = directProdcutIds;
+        this.directStoreIds = directSearchParams.getStores();
+        this.directProductIds = directSearchParams.getProducts();
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -37,12 +38,16 @@ public class SearchPricesController {
         Optional.ofNullable(selectedProducts).
                 map(arr -> String.join(",", arr))
                 .ifPresent(s -> log.info("Got prices for <" + s + ">"));
-        model.addAttribute("prices", pricesService.getPrices(null, null));
+        HashSet<String> storeIds = new HashSet<>();
+        storeIds.add("aaa");
+        model.addAttribute("prices", pricesService.getPrices(storeIds, null));
         return "pricesTable";
     }
 
+    @SuppressWarnings("SameReturnValue")
     @GetMapping("/directAccess")
-    public String directHardCodedSearch() {
+    public String directHardCodedSearch(ExtendedModelMap model) {
+        model.addAttribute("prices", pricesService.getPrices(directStoreIds, directProductIds));
         return "pricesTable";
     }
 

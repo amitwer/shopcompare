@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.ui.ExtendedModelMap;
+import shopcompare.beans.DirectSearchParams;
 import shopcompare.datacontainers.PriceResult;
 import shopcompare.services.PricesService;
 
@@ -50,7 +51,6 @@ class SearchPricesControllerTest {
     @ParameterizedTest(name = "[{index}] Search prices is dynamic: {arguments}")
     @MethodSource("pricesToTest")
     void searchPriceIsDynamic(List<PriceResult> expectedPrices) {
-
         SearchPricesController searchPricesController = getSearchPricesController(pricesService, null, null);
         when(pricesService.getPrices(any(), any())).thenReturn(expectedPrices);
         searchPricesController.getPrices(null, model);
@@ -63,27 +63,40 @@ class SearchPricesControllerTest {
     @Test
     void testDirectAccessReturnsPricesTable() {
         SearchPricesController searchPricesController = getSearchPricesController(pricesService, null, null);
-        String page = searchPricesController.directHardCodedSearch();
+        String page = searchPricesController.directHardCodedSearch(model);
         assertThat(page).isEqualTo("pricesTable");
     }
 
     @Test
-    void testDirectAccessWithPredefinedStorsAndProducts() {
+    void testDirectAccessWithPredefinedStoresAndProducts() {
         Set<String> storeIds = Stream.of("986", "111", "123").collect(Collectors.toSet());
         Set<String> productIds = Stream.of("777", "123").collect(Collectors.toSet());
-
         when(pricesService.getPrices(anySet(), anySet())).thenReturn(new LinkedList<>());
         SearchPricesController searchPricesController = getSearchPricesController(pricesService, storeIds, productIds);
-        searchPricesController.directHardCodedSearch();
+        searchPricesController.directHardCodedSearch(model);
+        verify(pricesService, times(1)).getPrices(eq(storeIds), eq(productIds));
+    }
 
+    @ParameterizedTest(name = "[{index}] Direct search is storing results in model: {arguments}")
+    @MethodSource("pricesToTest")
+    void directAccessStoresResultsInModel(List<PriceResult> expectedPrices) {
+        SearchPricesController searchPricesController = getSearchPricesController(pricesService, null, null);
+        when(pricesService.getPrices(any(), any())).thenReturn(expectedPrices);
+        searchPricesController.directHardCodedSearch(model);
+        Object prices = model.get("prices");
+        assertThat(prices).isNotNull().isInstanceOf(List.class);
+        assertThat(prices).isEqualTo(expectedPrices);
+        verify(pricesService, times(1)).getPrices(any(), any());
     }
 
 
     private SearchPricesController getSearchPricesController(PricesService pricesService, Set<String> storeIds, Set<String> productIds) {
         if (Objects.isNull(pricesService)) {
-            pricesService = new PricesService();
+            pricesService = mock(PricesService.class);
         }
-        SearchPricesController searchPricesController = new SearchPricesController(pricesService, storeIds, productIds);
-        return searchPricesController;
+        DirectSearchParams directSearchParams = new DirectSearchParams();
+        directSearchParams.setProducts(productIds);
+        directSearchParams.setStores(storeIds);
+        return new SearchPricesController(pricesService, directSearchParams);
     }
 }

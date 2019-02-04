@@ -1,8 +1,8 @@
 package shopcompare.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.mockito.invocation.Invocation;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import shopcompare.datacontainers.Location;
 import shopcompare.datacontainers.Store;
 
@@ -20,23 +19,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class SuperGetApiGetStoresTest {
+@SuppressWarnings("SpellCheckingInspection")
+class SuperGetApiGetStoresTest extends SuperGetApiTest {
 
-    private static final String API_URL = "http://myUrl.com";
-    private SuperGetApi superGetApi;
-    private RestTemplate restTemplate;
-    private ApiKeyProvider apiKeyProvider;
-
-    @BeforeEach
-    private void setup() {
-        restTemplate = mock(RestTemplate.class);
-        apiKeyProvider = mock(ApiKeyProvider.class);
-        superGetApi = new SuperGetApi(restTemplate, apiKeyProvider, API_URL);
-    }
 
     @Test
     void getStoresByGpsInvokesRestApi() {
@@ -71,6 +58,13 @@ class SuperGetApiGetStoresTest {
                 .hasMessage("Radius must be non-negative");
     }
 
+    @ParameterizedTest
+    @EnumSource(value = HttpStatus.class, mode = EnumSource.Mode.EXCLUDE, names = {"OK"})
+    void getStoresByGpsThrowsExceptionForHttpStatusOtherThan200(HttpStatus httpStatus) {
+        when(restTemplate.postForEntity(anyString(), any(), eq(String.class))).thenReturn(createResponseWithHttpStatus(httpStatus));
+        assertThatThrownBy(() -> superGetApi.getStoresByGps(new Location(0, 0), 8)).isInstanceOf(IllegalStateException.class).hasNoCause().hasMessage("Got HTTP response " + httpStatus + " when calling getStoresByGps");
+
+    }
 
     @Test
     void getStoresByGpsHasAllParameters() {
@@ -86,10 +80,11 @@ class SuperGetApiGetStoresTest {
         assertThat(body).containsAllEntriesOf(getExpectedRequestParameters(apiKey, location, 5));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private MultiValueMap<String, String> getExpectedRequestParameters(String apiKey, Location location, int radiusInKm) {
         MultiValueMap<String, String> expectedValues = new LinkedMultiValueMap<>();
-        expectedValues.add("latitude", Double.toString(location.getLatitude()));
         expectedValues.add("longitude", Double.toString(location.getLongitude()));
+        expectedValues.add("latitude", Double.toString(location.getLatitude()));
         expectedValues.add("km_radius", Integer.toString(radiusInKm));
         expectedValues.add("order", Double.toString(1));//order 1 is "near first"
         expectedValues.add("action", "GetStoresByGPS");
