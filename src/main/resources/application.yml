@@ -2,13 +2,19 @@ logging:
   level:
     shopcompare.*: debug
     .*: info
+  file: shopCompare.log
 
 server:
   tomcat:
     accesslog:
       enabled: true
+
+proxy:
+  should-use: false
+  port: 8888
+
 superget:
-  api-url: http://api.superget.co.il/
+  api-url: https://api.superget.co.il/
 direct:
   stores:
     - 241
