@@ -1,14 +1,8 @@
 package shopcompare.datacontainers;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
+@Data
 public class PriceResult {
     private String productName;
     private String barcode;

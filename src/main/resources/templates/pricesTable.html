@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Search for product</title>
     <meta id="price_table_meta_id" name="price_table_meta_id"/>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
 <H1>This this is a product search results page</H1>
@@ -11,20 +16,20 @@
 <table id="prices_table">
     <thead>
     <tr>
-        <th>שם המוצר</th>
-        <th> ברקוד</th>
-        <th> סניף</th>
-        <th> מחיר</th>
+        <th>מוצר</th>
+        <th th:each="product: ${products}" th:text="${product}"/>
+        <!--<th> ברקוד</th>-->
+        <!--<th> סניף</th>-->
+        <!--<th> מחיר</th>-->
     </tr>
     </thead>
     <tbody>
     <!--/*@thymesVar id="prices" type="java.util.List"*/-->
-    <tr th:each="price : ${prices}" th:value="${price}">
+    <tr th:each="storePrice : ${prices}">
+        <!--/*@thymesVar id="storePrice" type="shopcompare.datacontainers.PriceResultByStore"*/-->
         <!--/*@thymesVar id="price" type="shopcompare.datacontainers.PriceResult"*/-->
-        <td th:text="${price.getProductName()}"></td>
-        <td th:text="${price.barcode}"></td>
-        <td th:text="${price.getStore()}"></td>
-        <td th:text="${price.getPrice()}"></td>
+        <td th:text="${storePrice.getStoreName()}"></td>
+        <td th:each="price: ${storePrice.getPriceList()}" th:text="${price.getPrice()}"/>
     </tr>
     </tbody>
 </table>

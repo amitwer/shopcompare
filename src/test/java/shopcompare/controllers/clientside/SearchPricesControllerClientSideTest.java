@@ -1,5 +1,6 @@
 package shopcompare.controllers.clientside;
 
+import org.assertj.core.util.Lists;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,7 +24,6 @@ import shopcompare.services.PricesService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,9 +52,9 @@ class SearchPricesControllerClientSideTest {
 
     private static Stream<List<PriceResult>> pricesAreFromModelDataProvider() {
         return Stream.of(
-                Collections.singletonList(new PriceResult("במבה", "123456", "רמי לוי תלפיות", "11.2")),
-                Collections.singletonList(new PriceResult("Bisli", "98765432", "שפע עוז", "15.0")),
-                Arrays.asList(new PriceResult("1", "2", "3", "4"), new PriceResult("a", "b", "c", "d"))
+//                Collections.singletonList(new PriceResult("במבה", "123456", "רמי לוי תלפיות", "11.2")),
+//                Collections.singletonList(new PriceResult("Bisli", "98765432", "שפע עוז", "15.0")),
+                Arrays.asList(new PriceResult("product1", "barcode2", "store3", "price4"), new PriceResult("product-a", "barcode-b", "store-c", "price-d"))
         );
     }
 
@@ -74,6 +74,23 @@ class SearchPricesControllerClientSideTest {
         assertThat(metaId).isNotNull();
     }
 
+    @Test
+    void resultsAreSortedByProduct() throws Exception {
+        when(pricesService.getPrices(any(), any())).thenReturn(Lists.newArrayList(
+                new PriceResult("name1", "1", "Store1", "price11"),
+                new PriceResult("name2", "2", "Store1", "price12"),
+                new PriceResult("name3", "3", "Store1", "price13"),
+                new PriceResult("name1", "1", "Store2", "price21"),
+                new PriceResult("name1", "1", "Store2", "price22")
+        ));
+        String html = mockMvc.perform(post("/getPrices").param("selectedProducts", Arrays.toString(new String[]{"dummy", "dummy"}))).andReturn().getResponse().getContentAsString();
+        assertThat(html).isNotBlank();
+        Element pricesTable = Jsoup.parse(html).body().getElementById("prices_table");
+        Elements headersRow = pricesTable.getElementsByTag("th");
+        assertThat(headersRow.size()).as(headersRow.toString()).isEqualTo(4);
+        assertThat(headersRow.eachText()).containsExactlyInAnyOrder("", "name1", "name2", "name3");
+    }
+
     private void validatePrices(MvcResult mvcResult, List<PriceResult> expectedPrices) throws UnsupportedEncodingException {
         String html = mvcResult.getResponse().getContentAsString();
         Document parsedHtml = Jsoup.parse(html);
@@ -81,7 +98,6 @@ class SearchPricesControllerClientSideTest {
         Elements tableBody = pricesTable.getElementsByTag("tbody");
         List<PriceResult> rows = tableBody.iterator().next().children().stream().map(this::transformRowToPrice).collect(Collectors.toList());
         assertThat(rows).containsExactlyInAnyOrderElementsOf(expectedPrices);
-
     }
 
     private PriceResult transformRowToPrice(Element row) {
