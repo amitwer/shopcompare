@@ -56,7 +56,7 @@ public class SearchPricesController {
     }
 
     private List<PriceResultByStore> sortPricesPerStore(List<PriceResult> prices) {
-        List<PriceResultByStore> allStores = prices.stream().map(PriceResult::getStore).distinct().map(storeName -> new PriceResultByStore(storeName)).collect(Collectors.toList());
+        List<PriceResultByStore> allStores = prices.stream().map(PriceResult::getStore).distinct().map(PriceResultByStore::new).collect(Collectors.toList());
         Set<String> allBarcodes = prices.stream().map(PriceResult::getBarcode).collect(Collectors.toSet());
         for (String barcode : allBarcodes) {
             List<PriceResult> pricesForBarcode = prices.stream().filter(price -> price.getBarcode().equals(barcode)).collect(Collectors.toList());
@@ -64,8 +64,6 @@ public class SearchPricesController {
             allStores.forEach(store -> store.add(pricesForBarcode.stream().filter(price -> price.getStore().equals(store.getStoreName())).findAny().orElse(new PriceResult(productName, barcode, store.getStoreName(), null))));
         }
         return allStores;
-
-
     }
 
     @SuppressWarnings("SameReturnValue")

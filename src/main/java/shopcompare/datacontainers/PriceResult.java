@@ -1,6 +1,7 @@
 package shopcompare.datacontainers;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class PriceResult {
@@ -14,7 +15,9 @@ public class PriceResult {
         this.productName = productName;
         this.barcode = barcode;
         this.store = store;
-        this.price = price;
+        if (StringUtils.isNotBlank(price)) {
+            this.price = price;
+        }
     }
 
     public PriceResult() {

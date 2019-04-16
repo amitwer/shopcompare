@@ -20,11 +20,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import shopcompare.datacontainers.PriceResult;
+import shopcompare.datacontainers.PriceResultByStore;
 import shopcompare.services.PricesService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,15 +48,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class SearchPricesControllerClientSideTest {
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    PricesService pricesService;
+    private PricesService pricesService;
 
     private static Stream<List<PriceResult>> pricesAreFromModelDataProvider() {
         return Stream.of(
-//                Collections.singletonList(new PriceResult("במבה", "123456", "רמי לוי תלפיות", "11.2")),
-//                Collections.singletonList(new PriceResult("Bisli", "98765432", "שפע עוז", "15.0")),
+                Collections.singletonList(new PriceResult("במבה", "123456", "רמי לוי תלפיות", "11.2")),
+                Collections.singletonList(new PriceResult("Bisli", "98765432", "שפע עוז", "15.0")),
                 Arrays.asList(new PriceResult("product1", "barcode2", "store3", "price4"), new PriceResult("product-a", "barcode-b", "store-c", "price-d"))
         );
     }
@@ -63,7 +66,7 @@ class SearchPricesControllerClientSideTest {
     void pricesAreFromModelData(List<PriceResult> expectedPrices) throws Exception {
         when(pricesService.getPrices(any(), any())).thenReturn(expectedPrices);
         ResultActions responsePage = mockMvc.perform(post("/getPrices").param("selectedProducts", Arrays.toString(new String[]{"dummy", "dummy"})));
-        responsePage.andExpect(result -> validatePrices(result, expectedPrices));
+        responsePage.andExpect(result -> validatePrices(result, sortPricesPerStore(expectedPrices)));
     }
 
     @Test
@@ -88,26 +91,52 @@ class SearchPricesControllerClientSideTest {
         Element pricesTable = Jsoup.parse(html).body().getElementById("prices_table");
         Elements headersRow = pricesTable.getElementsByTag("th");
         assertThat(headersRow.size()).as(headersRow.toString()).isEqualTo(4);
-        assertThat(headersRow.eachText()).containsExactlyInAnyOrder("", "name1", "name2", "name3");
+        assertThat(headersRow.eachText()).containsExactlyInAnyOrder("מוצר", "name1", "name2", "name3");
     }
 
-    private void validatePrices(MvcResult mvcResult, List<PriceResult> expectedPrices) throws UnsupportedEncodingException {
+    private void validatePrices(MvcResult mvcResult, List<PriceResultByStore> expectedPrices) throws UnsupportedEncodingException {
         String html = mvcResult.getResponse().getContentAsString();
         Document parsedHtml = Jsoup.parse(html);
         Element pricesTable = parsedHtml.body().getElementById("prices_table");
+        List<String> headersRow = parseHeadersRow(pricesTable);
         Elements tableBody = pricesTable.getElementsByTag("tbody");
-        List<PriceResult> rows = tableBody.iterator().next().children().stream().map(this::transformRowToPrice).collect(Collectors.toList());
-        assertThat(rows).containsExactlyInAnyOrderElementsOf(expectedPrices);
+        List<PriceResultByStore> actualResultByStores = parseTableBody(headersRow, tableBody);
+        assertThat(actualResultByStores).
+                containsExactlyInAnyOrderElementsOf(removeBarcodes(expectedPrices));
     }
 
-    private PriceResult transformRowToPrice(Element row) {
-        List<String> cells = row.children().eachText();
-        PriceResult priceResult = new PriceResult();
-        priceResult.setProductName(cells.get(0));
-        priceResult.setBarcode(cells.get(1));
-        priceResult.setStore(cells.get(2));
-        priceResult.setPrice(cells.get(3));
-        return priceResult;
+    private Iterable<? extends PriceResultByStore> removeBarcodes(List<PriceResultByStore> expectedPrices) {
+        expectedPrices.stream().flatMap( p->p.getPriceList().stream()).forEach(p->p.setBarcode(null));
+        return expectedPrices;
+    }
+
+    private List<PriceResultByStore> parseTableBody(List<String> headersRow, Elements tableBody) {
+        return tableBody.iterator().next().children().stream().map(row -> transformRowToPriceByStore(headersRow, row)).collect(Collectors.toList());
+    }
+
+    private PriceResultByStore transformRowToPriceByStore(List<String> headersRow, Element row) {
+        Elements cells = row.children();
+        PriceResultByStore priceResultByStore = new PriceResultByStore(cells.get(0).text());
+        for (int i=1;i<headersRow.size();i++){
+            priceResultByStore.add(new PriceResult(headersRow.get(i),null,priceResultByStore.getStoreName(),cells.get(i).text()));
+        }
+        return priceResultByStore;
+    }
+
+    private List<String> parseHeadersRow(Element pricesTable) {
+        Element headers = pricesTable.getElementsByTag("thead").first().getElementsByTag("tr").first();
+        return headers.children().stream().map(Element::text).collect(Collectors.toList());
+    }
+
+    private List<PriceResultByStore> sortPricesPerStore(List<PriceResult> prices) {
+        List<PriceResultByStore> allStores = prices.stream().map(PriceResult::getStore).distinct().map(storeName -> new PriceResultByStore(storeName)).collect(Collectors.toList());
+        Set<String> allBarcodes = prices.stream().map(PriceResult::getBarcode).collect(Collectors.toSet());
+        for (String barcode : allBarcodes) {
+            List<PriceResult> pricesForBarcode = prices.stream().filter(price -> price.getBarcode().equals(barcode)).collect(Collectors.toList());
+            String productName = pricesForBarcode.get(0).getProductName();
+            allStores.forEach(store -> store.add(pricesForBarcode.stream().filter(price -> price.getStore().equals(store.getStoreName())).findAny().orElse(new PriceResult(productName, barcode, store.getStoreName(), null))));
+        }
+        return allStores;
     }
 
 
