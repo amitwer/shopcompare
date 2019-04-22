@@ -57,7 +57,7 @@ public class Store {
     private String cityId;
     @JsonProperty("sub_chain_code")
     private String subChainCode;
-♥
+
 
     public String getStoreArea() {
         return this.storeArea;
