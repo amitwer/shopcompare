@@ -108,7 +108,7 @@ class SearchPricesControllerTest {
             assertThat(products).isEqualTo(price.getPriceList().stream().map(PriceResult::getProductName).collect(Collectors.toList()));
         }
     }
-    
+
     private Collection<PriceResultByStore> sortPricesByStore(List<PriceResult> priceResults) {
         List<PriceResultByStore> priceResultByStores = new LinkedList<>();
         priceResults.stream().map(p -> p.getStore()).distinct().forEach(storeName -> priceResultByStores.add(new PriceResultByStore(storeName)));

@@ -1,8 +1,8 @@
 package shopcompare.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-@Slf4j
 public class SuperGetApi {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SuperGetApi.class);
     private final String apiUrl;
     private final RestTemplate restTemplate;
     private final ApiKeyProvider apiKeyProvider;

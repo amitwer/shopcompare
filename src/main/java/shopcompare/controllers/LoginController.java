@@ -1,6 +1,6 @@
 package shopcompare.controllers;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +14,9 @@ import shopcompare.services.CityService;
  * Successful login should lead to the main application page
  */
 @Controller
-@Slf4j
 public class LoginController {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(LoginController.class);
     private final CityService cityService;
 
     @Autowired
@@ -27,6 +27,7 @@ public class LoginController {
     @SuppressWarnings("SameReturnValue")
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model) {
+        log.info("got login request for user <{}>", username);
         if (username.equalsIgnoreCase("Amit") && password.equals("wertheimer")) {
             model.addAttribute("cities", cityService.getCities());
             return "MainApplicationPage";

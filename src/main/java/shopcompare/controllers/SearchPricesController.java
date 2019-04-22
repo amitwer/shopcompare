@@ -1,7 +1,7 @@
 package shopcompare.controllers;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ExtendedModelMap;
@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 /**
  * This Class handles requests for prices of specific products (with ID's)
  */
-@Slf4j
 @Controller
 public class SearchPricesController {
 
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(SearchPricesController.class);
     private final PricesService pricesService;
     private final Set<String> directStoreIds;
     private final Set<String> directProductIds;

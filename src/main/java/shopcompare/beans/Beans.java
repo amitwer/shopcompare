@@ -1,6 +1,6 @@
 package shopcompare.beans;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +13,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 
 @Configuration
-@Slf4j
 public class Beans {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(Beans.class);
     private final RestTemplateBuilder restTemplateBuilder;
     @Value("${proxy.should-use:false}")
     private boolean shouldUseProxy;

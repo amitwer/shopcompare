@@ -1,6 +1,6 @@
 package shopcompare.controllers;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import shopcompare.exceptions.AccessForbiddenException;
@@ -9,9 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("SameReturnValue")
 @Controller
-@Slf4j
 public class ShopCompareController {
 
+
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(ShopCompareController.class);
 
     @RequestMapping("/")
     public String mainPage() {
@@ -20,7 +21,7 @@ public class ShopCompareController {
 
     @RequestMapping("**")
     public String catchAll(HttpServletRequest request) {
-        log.error("Got invalid <" + request.getMethod() + "> request  <" + request.getRequestURI() + ">");
+        log.error("Got invalid <{}>, request  <{}>" , request.getRequestURI() ,request.getMethod() );
         throw new AccessForbiddenException();
     }
 }

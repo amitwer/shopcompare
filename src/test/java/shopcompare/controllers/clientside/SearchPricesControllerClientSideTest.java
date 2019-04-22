@@ -106,7 +106,7 @@ class SearchPricesControllerClientSideTest {
     }
 
     private Iterable<? extends PriceResultByStore> removeBarcodes(List<PriceResultByStore> expectedPrices) {
-        expectedPrices.stream().flatMap( p->p.getPriceList().stream()).forEach(p->p.setBarcode(null));
+        expectedPrices.stream().flatMap(p -> p.getPriceList().stream()).forEach(p -> p.setBarcode(null));
         return expectedPrices;
     }
 
@@ -117,8 +117,8 @@ class SearchPricesControllerClientSideTest {
     private PriceResultByStore transformRowToPriceByStore(List<String> headersRow, Element row) {
         Elements cells = row.children();
         PriceResultByStore priceResultByStore = new PriceResultByStore(cells.get(0).text());
-        for (int i=1;i<headersRow.size();i++){
-            priceResultByStore.add(new PriceResult(headersRow.get(i),null,priceResultByStore.getStoreName(),cells.get(i).text()));
+        for (int i = 1; i < headersRow.size(); i++) {
+            priceResultByStore.add(new PriceResult(headersRow.get(i), null, priceResultByStore.getStoreName(), cells.get(i).text()));
         }
         return priceResultByStore;
     }

@@ -1,8 +1,8 @@
 package shopcompare.services;
 
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import shopcompare.datacontainers.Price;
@@ -12,8 +12,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-@Slf4j
 public class PricesService {
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(PricesService.class);
     private final SuperGetApi superGetApi;
 
     @Autowired
