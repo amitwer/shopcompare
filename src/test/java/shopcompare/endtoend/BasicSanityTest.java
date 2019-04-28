@@ -39,7 +39,7 @@ public class BasicSanityTest {
 
     @BeforeAll
     static void setupBrowser() {
-        WebDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver().version("73.0.3683.68").setup();
     }
 
     @BeforeEach
