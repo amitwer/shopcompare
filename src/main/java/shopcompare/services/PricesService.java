@@ -25,16 +25,17 @@ public class PricesService {
     }
 
     /**
-     *  get a list of prices from SuperGet
-     * @param storeIds - a list of store IDs of the store to look for
-     * @param productIds  -  A list of product ids to look for in each store
+     * get a list of prices from SuperGet
+     *
+     * @param storeIds   - a list of store IDs of the store to look for
+     * @param productIds -  A list of product ids to look for in each store
      * @return
      */
     public List<PriceResult> getPrices(Set<String> storeIds, Set<String> productIds) {
         if (CollectionUtils.isNotEmpty(storeIds)) {
             List<PriceResult> prices = new LinkedList<>();
             storeIds.stream().map(storeId -> getPricesOrEmpty(productIds, storeId)).filter(Objects::nonNull).forEach(prices::addAll);
-            if (noResultsFound(prices)){
+            if (noResultsFound(prices)) {
                 throw new NoResultsFoundException("did not find results for and of the requested items in any store");
             }
             return prices;
@@ -43,20 +44,22 @@ public class PricesService {
     }
 
     private boolean noResultsFound(List<PriceResult> prices) {
-        return !prices.stream().map(PriceResult::getPrice).filter(StringUtils::isNotEmpty).findAny().isPresent();
+        return prices.stream().map(PriceResult::getPrice).noneMatch(StringUtils::isNotEmpty);
     }
 
     /*
     Calls the API, deals with exceptions and return null instead
      */
     private List<PriceResult> getPricesOrEmpty(Set<String> productIds, String storeId) {
-        try {
-            log.debug("calling getPrices for storeId:{}, products:{}", storeId, productIds);
-            return superGetApi.getPrices(storeId, productIds).stream().filter(Objects::nonNull).map(this::translateToResult).collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("Got exception when calling getPrices", e);
-            return Collections.emptyList();
+        if (CollectionUtils.isNotEmpty(productIds)) {
+            try {
+                log.debug("calling getPrices for storeId:{}, products:{}", storeId, productIds);
+                return superGetApi.getPrices(storeId, productIds).stream().filter(Objects::nonNull).map(this::translateToResult).collect(Collectors.toList());
+            } catch (Exception e) {
+                log.error("Got exception when calling getPrices", e);
+            }
         }
+        return Collections.emptyList();
     }
 
     private PriceResult translateToResult(@NonNull Price price) {

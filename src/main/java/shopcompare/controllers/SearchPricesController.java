@@ -1,6 +1,7 @@
 package shopcompare.controllers;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,10 +14,7 @@ import shopcompare.datacontainers.PriceResult;
 import shopcompare.datacontainers.PriceResultByStore;
 import shopcompare.services.PricesService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,7 +43,10 @@ public class SearchPricesController {
                 .ifPresent(s -> log.info("Got prices for {}", s));
         HashSet<String> storeIds = new HashSet<>();
         storeIds.add("aaa");
-        List<PriceResult> prices = pricesService.getPrices(storeIds, null);
+        if (ArrayUtils.isEmpty(selectedProducts)) {
+            selectedProducts = new String[]{"2"};//dummy value
+        }
+        List<PriceResult> prices = pricesService.getPrices(storeIds, Arrays.stream(selectedProducts).collect(Collectors.toSet()));
         List<PriceResultByStore> priceResultByStores = sortPricesPerStore(prices);
         model.addAttribute("prices", priceResultByStores);
         if (CollectionUtils.isNotEmpty(priceResultByStores)) {
