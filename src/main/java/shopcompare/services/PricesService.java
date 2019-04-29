@@ -1,10 +1,10 @@
 package shopcompare.services;
 
-import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import shopcompare.datacontainers.Price;
 import shopcompare.datacontainers.PriceResult;
@@ -13,6 +13,10 @@ import shopcompare.exceptions.NoResultsFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class is meant to provide the application with product prices.
+ * Results are cached for a day per store
+ */
 @Component
 public class PricesService {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(PricesService.class);
@@ -29,7 +33,7 @@ public class PricesService {
      *
      * @param storeIds   - a list of store IDs of the store to look for
      * @param productIds -  A list of product ids to look for in each store
-     * @return
+     * @return a list of {@link PriceResult} for the relevant IDs
      */
     public List<PriceResult> getPrices(Set<String> storeIds, Set<String> productIds) {
         if (CollectionUtils.isNotEmpty(storeIds)) {
