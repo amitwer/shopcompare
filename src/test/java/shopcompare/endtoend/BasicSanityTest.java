@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import shopcompare.datacontainers.Price;
 import shopcompare.endtoend.businessflows.SearchProductsFlows;
 import shopcompare.endtoend.pageobjects.TableWithPricesPage;
+import shopcompare.services.CacheService;
 import shopcompare.services.SuperGetApi;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class BasicSanityTest {
     SearchProductsFlows searchProductsFlows;
     @MockBean
     private SuperGetApi superGetApi;
+    @MockBean
+    private CacheService cacheService;
     private ChromeDriver driver;
 
 

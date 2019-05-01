@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import shopcompare.datacontainers.Price;
 import shopcompare.datacontainers.PriceResult;
 import shopcompare.exceptions.NoResultsFoundException;
@@ -17,15 +17,17 @@ import java.util.stream.Collectors;
  * This class is meant to provide the application with product prices.
  * Results are cached for a day per store
  */
-@Component
+@Service
 public class PricesService {
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(PricesService.class);
     private final SuperGetApi superGetApi;
+    private final CacheService cacheService;
 
 
     @Autowired
-    public PricesService(SuperGetApi superGetApi) {
+    public PricesService(SuperGetApi superGetApi, CacheService cacheService) {
         this.superGetApi = superGetApi;
+        this.cacheService = cacheService;
     }
 
     /**
@@ -57,13 +59,28 @@ public class PricesService {
     private List<PriceResult> getPricesOrEmpty(Set<String> productIds, String storeId) {
         if (CollectionUtils.isNotEmpty(productIds)) {
             try {
-                log.debug("calling getPrices for storeId:{}, products:{}", storeId, productIds);
-                return superGetApi.getPrices(storeId, productIds).stream().filter(Objects::nonNull).map(this::translateToResult).collect(Collectors.toList());
+                List<Price> rawPrices;
+                Set<String> nonCachedProductIds = getNonCachedProducts(storeId, productIds);
+                if (nonCachedProductIds.isEmpty()) {
+                    log.debug("calling getPrices for storeId:{}, products:{}", storeId, productIds);
+                    rawPrices = superGetApi.getPrices(storeId, nonCachedProductIds);
+                } else {
+                    rawPrices = cacheService.getPricesFromCache(storeId, productIds);
+                }
+                return rawPrices.stream().map(this::translateToResult).collect(Collectors.toList());
             } catch (Exception e) {
                 log.error("Got exception when calling getPrices", e);
             }
         }
         return Collections.emptyList();
+    }
+
+    private Set<String> getNonCachedProducts(String storeId, Set<String> productIds) {
+        return productIds.stream().filter(id -> isNotInCache(storeId, id)).collect(Collectors.toSet());
+    }
+
+    private boolean isNotInCache(String storeId, String productId) {
+        return cacheService.isPriceCached(storeId, productId);
     }
 
     private PriceResult translateToResult(@NonNull Price price) {

@@ -22,6 +22,7 @@ class PricesServiceTest {
 
     private SuperGetApi superGetApi;
     private PricesService pricesService;
+    private CacheService cacheService;
 
     private static Stream<Set<String>> nullAndEmptySet() {
         return Stream.of(new HashSet<>(), null);
@@ -32,7 +33,8 @@ class PricesServiceTest {
     @BeforeEach
     private void setup() {
         superGetApi = mock(SuperGetApi.class);
-        pricesService = new PricesService(superGetApi);
+        cacheService = mock(CacheService.class);
+        pricesService = new PricesService(superGetApi, cacheService);
     }
 
     @Test
@@ -104,6 +106,18 @@ class PricesServiceTest {
         when(superGetApi.getPrices(eq("store3"), any())).thenReturn(Lists.newArrayList(store3Result));
         List<PriceResult> prices = pricesService.getPrices(newHashSet("store1", "store2", "store3"), newHashSet("product1", "product2"));
         assertThat(prices).containsExactlyInAnyOrder(priceToPriceResult(store1Result), priceToPriceResult(store3Result));
+    }
+
+    @Test
+    void getPricesFromCache() {
+        when(cacheService.isPriceCached(anyString(), anyString())).thenReturn(true);
+        try {
+            pricesService.getPrices(newHashSet("Store1"), newHashSet("product1"));
+        } catch (Exception e) {
+            //do nothing
+        }
+        verify(superGetApi, times(0)).getPrices(any(), any());
+        verify(cacheService, times(1)).getPricesFromCache(eq("Store1"), eq(newHashSet("product1")));
     }
 
     private Price dummyPrice(String constantValue) {
