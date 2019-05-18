@@ -52,6 +52,18 @@ class PricesServiceTest {
         assertThat(prices).containsExactlyElementsOf(expectedValue.stream().map(this::priceToPriceResult).collect(Collectors.toSet()));
     }
 
+    @Test
+    void resultsAreCached() {
+        Price dummyPrice = dummyPrice("price");
+        when(superGetApi.getPrices(anyString(), any())).thenReturn(Lists.newArrayList(dummyPrice));
+        pricesService.getPrices(newHashSet(dummyPrice.getStoreName()), newHashSet(dummyPrice.getProductId()));
+        //2nd call to cache, should not invoke the API
+        when(cacheService.getPricesFromCache(any(), any())).thenReturn(Lists.newArrayList(dummyPrice));
+        when(cacheService.isPriceCached(any(), any())).thenReturn(true);
+        pricesService.getPrices(newHashSet(dummyPrice.getStoreName()), newHashSet(dummyPrice.getProductId()));
+        verify(superGetApi, times(1)).getPrices(any(), any());
+    }
+
     @ParameterizedTest
     @MethodSource("nullAndEmptySet")
     void getPricesThrowsExceptionIfStoreIdsIsEmpty(HashSet<String> storeIds) {
@@ -90,6 +102,14 @@ class PricesServiceTest {
     }
 
     @Test
+    void getPricesReturnsOnlyValuesFromApi() {
+        ArrayList<Price> expectedValue = Lists.newArrayList(dummyPrice("first"), dummyPrice("second"));
+        when(superGetApi.getPrices(any(), any())).thenReturn(expectedValue);
+        List<PriceResult> prices = pricesService.getPrices(newHashSet("id"), newHashSet("product"));
+        assertThat(prices).containsExactlyElementsOf(expectedValue.stream().map(this::priceToPriceResult).collect(Collectors.toSet()));
+    }
+
+    @Test
     @Disabled
     void getPricesCanDealWithException() {
         when(superGetApi.getPrices(any(), any())).thenThrow(new RuntimeException("If you got this, we've failed the test"));
@@ -109,7 +129,7 @@ class PricesServiceTest {
     }
 
     @Test
-    void getPricesFromCache() {
+    void pricesAreFromCacheFirst() {
         when(cacheService.isPriceCached(anyString(), anyString())).thenReturn(true);
         try {
             pricesService.getPrices(newHashSet("Store1"), newHashSet("product1"));
@@ -119,6 +139,7 @@ class PricesServiceTest {
         verify(superGetApi, times(0)).getPrices(any(), any());
         verify(cacheService, times(1)).getPricesFromCache(eq("Store1"), eq(newHashSet("product1")));
     }
+
 
     private Price dummyPrice(String constantValue) {
         Price price = new Price();

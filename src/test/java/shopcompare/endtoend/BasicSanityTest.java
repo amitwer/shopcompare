@@ -42,7 +42,7 @@ public class BasicSanityTest {
 
     @BeforeAll
     static void setupBrowser() {
-        WebDriverManager.chromedriver().version("73.0.3683.68").setup();
+        WebDriverManager.chromedriver().setup();
     }
 
     @BeforeEach
@@ -69,7 +69,7 @@ public class BasicSanityTest {
 
     @Test
     void testFullSearchFlow() {
-        TableWithPricesPage tableWithPricesPage = searchProductsFlows.searchForProduct(driver, "במבה", port);
+        TableWithPricesPage tableWithPricesPage = searchProductsFlows.searchForProduct(driver, "Apples", port);
         Assertions.assertThat(tableWithPricesPage.isInPage()).as("In Final price results page").isTrue();
 
     }

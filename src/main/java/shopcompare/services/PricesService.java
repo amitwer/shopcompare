@@ -31,7 +31,7 @@ public class PricesService {
     }
 
     /**
-     * get a list of prices from SuperGet
+     * get a list of prices from cache or from API if no results are cached
      *
      * @param storeIds   - a list of store IDs of the store to look for
      * @param productIds -  A list of product ids to look for in each store

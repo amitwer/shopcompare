@@ -91,7 +91,7 @@ class SearchPricesControllerClientSideTest {
         Element pricesTable = Jsoup.parse(html).body().getElementById("prices_table");
         Elements headersRow = pricesTable.getElementsByTag("th");
         assertThat(headersRow.size()).as(headersRow.toString()).isEqualTo(4);
-        assertThat(headersRow.eachText()).containsExactlyInAnyOrder("מוצר", "name1", "name2", "name3");
+        assertThat(headersRow.eachText()).containsExactlyInAnyOrder("product", "name1", "name2", "name3");
     }
 
     private void validatePrices(MvcResult mvcResult, List<PriceResultByStore> expectedPrices) throws UnsupportedEncodingException {
