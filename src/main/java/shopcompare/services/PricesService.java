@@ -1,14 +1,13 @@
 package shopcompare.services;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import shopcompare.datacontainers.Price;
 import shopcompare.datacontainers.PriceResult;
-import shopcompare.exceptions.NoResultsFoundException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,12 +23,6 @@ public class PricesService {
     private final CacheService cacheService;
 
 
-    @Autowired
-    public PricesService(SuperGetApi superGetApi, CacheService cacheService) {
-        this.superGetApi = superGetApi;
-        this.cacheService = cacheService;
-    }
-
     /**
      * get a list of prices from cache or from API if no results are cached
      *
@@ -40,17 +33,13 @@ public class PricesService {
     public List<PriceResult> getPrices(Set<String> storeIds, Set<String> productIds) {
         if (CollectionUtils.isNotEmpty(storeIds)) {
             List<PriceResult> prices = new LinkedList<>();
-            storeIds.stream().map(storeId -> getPricesOrEmpty(productIds, storeId)).filter(Objects::nonNull).forEach(prices::addAll);
-            if (noResultsFound(prices)) {
-                throw new NoResultsFoundException("did not find results for and of the requested items in any store");
-            }
+            storeIds.stream()
+                    .map(storeId -> getPricesOrEmpty(productIds, storeId))
+                    .filter(Objects::nonNull)
+                    .forEach(prices::addAll);
             return prices;
         }
         throw new IllegalArgumentException("Store IDs cannot be empty");
-    }
-
-    private boolean noResultsFound(List<PriceResult> prices) {
-        return prices.stream().map(PriceResult::getPrice).noneMatch(StringUtils::isNotEmpty);
     }
 
     /*
@@ -62,7 +51,6 @@ public class PricesService {
                 List<Price> rawPrices;
                 Set<String> nonCachedProductIds = getNonCachedProducts(storeId, productIds);
                 if (nonCachedProductIds.isEmpty()) {
-                    log.debug("calling getPrices for storeId:{}, products:{}", storeId, productIds);
                     rawPrices = superGetApi.getPrices(storeId, nonCachedProductIds);
                 } else {
                     rawPrices = cacheService.getPricesFromCache(storeId, productIds);
@@ -80,12 +68,21 @@ public class PricesService {
     }
 
     private boolean isNotInCache(String storeId, String productId) {
-        return cacheService.isPriceCached(storeId, productId);
+        try {
+            return cacheService.isPriceCached(storeId, productId);
+        } catch (NotImplementedException e) {
+            return false;
+        }
     }
 
     private PriceResult translateToResult(@NonNull Price price) {
         return new PriceResult(price.getProductName(), price.getProductBarcode(), price.getStoreName(), price.getStoreProductPrice());
     }
 
+    @Autowired
+    public PricesService(SuperGetApi superGetApi, CacheService cacheService) {
+        this.superGetApi = superGetApi;
+        this.cacheService = cacheService;
+    }
 
 }

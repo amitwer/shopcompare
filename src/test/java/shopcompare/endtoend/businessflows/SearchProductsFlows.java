@@ -21,7 +21,7 @@ public class SearchProductsFlows {
         loginPage.login("amit", "wertheimer");
         Reporter.addScreenShot(driver, "After login");
         SearchPage searchPage = new SearchPage(driver);
-        searchPage.searchProductNameAndCity(productName, "ירושלים");
+        searchPage.searchProductNameAndCity(productName, "Jerusalem");
         driver.switchTo().frame("products");
         Reporter.addScreenShot(driver, "Search results");
         ProductSearchResultPage productSearchResultPage = new ProductSearchResultPage(driver);

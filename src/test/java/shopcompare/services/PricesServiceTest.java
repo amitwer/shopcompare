@@ -71,7 +71,6 @@ class PricesServiceTest {
     }
 
     @Test
-    @Disabled
     void getPricesInvokesApiOncePerStore() {
         pricesService.getPrices(newHashSet("store1", "store2"), newHashSet("product1", "product2"));
         verify(superGetApi, times(1)).getPrices(eq("store2"), any());
@@ -94,7 +93,6 @@ class PricesServiceTest {
     }
 
     @Test
-    @Disabled
     void getPricesCanDealWithNullValues() {
         when(superGetApi.getPrices(any(), any())).thenReturn(null);
         List<PriceResult> prices = pricesService.getPrices(newHashSet("store1"), newHashSet("product1", "product2"));
@@ -110,7 +108,6 @@ class PricesServiceTest {
     }
 
     @Test
-    @Disabled
     void getPricesCanDealWithException() {
         when(superGetApi.getPrices(any(), any())).thenThrow(new RuntimeException("If you got this, we've failed the test"));
         List<PriceResult> prices = pricesService.getPrices(newHashSet("store1"), newHashSet("product1", "product2"));
@@ -138,6 +135,13 @@ class PricesServiceTest {
         }
         verify(superGetApi, times(0)).getPrices(any(), any());
         verify(cacheService, times(1)).getPricesFromCache(eq("Store1"), eq(newHashSet("product1")));
+    }
+
+    @Test
+    @Disabled
+    void cacheServiceInvokedOnlyOnce() {
+        pricesService.getPrices(newHashSet("store1", "store2"), newHashSet("prod1", "prod2"));
+        verify(cacheService, times(1)).getPricesFromCache(any(), any());
     }
 
 

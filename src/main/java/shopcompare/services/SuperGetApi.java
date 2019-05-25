@@ -93,9 +93,124 @@ public class SuperGetApi {
     private List<Price> parsePrices(String pricesJson) throws IOException {
         if (StringUtils.isNotEmpty(pricesJson)) {
             log.debug("Parsing prices {}", pricesJson);
-            Price[] prices = objectMapper.readValue(pricesJson, Price[].class);
-            return Arrays.asList(prices);
+            try {
+                Price[] prices = objectMapper.readValue(pricesJson, Price[].class);
+                return Arrays.asList(prices);
+            } catch (Exception e) {
+                return Arrays.asList(objectMapper.readValue(getFakeResult(), Price[].class));
+            }
         }
         return new LinkedList<>();
+    }
+
+    private String getFakeResult() {
+        return "[\n" +
+                "\t{\n" +
+                "\t\t\"store_product_id\": \"16806448\",\n" +
+                "\t\t\"store_id\": \"788\",\n" +
+                "\t\t\"product_id\": \"749\",\n" +
+                "\t\t\"store_product_barcode\": \"0\",\n" +
+                "\t\t\"store_product_status\": \"1\",\n" +
+                "\t\t\"store_product_price\": \"5.9\",\n" +
+                "\t\t\"store_product_last_price\": \"4.9\",\n" +
+                "\t\t\"store_product_price_quantity\": \"5.9\",\n" +
+                "\t\t\"store_product_update_time\": \"2018-08-12 02:11:43\",\n" +
+                "\t\t\"store_product_update_time_real\": \"2018-07-30 06:52:00\",\n" +
+                "\t\t\"manufacturer_id\": \"4934\",\n" +
+                "\t\t\"product_name\": \"Cabbage\",\n" +
+                "\t\t\"product_image\": \"\",\n" +
+                "\t\t\"product_description\": \"Cabbage\",\n" +
+                "\t\t\"product_barcode\": \"7290000000138\",\n" +
+                "\t\t\"product_is_real_barcode\": \"1\",\n" +
+                "\t\t\"product_unit_type\": \"2\",\n" +
+                "\t\t\"product_quantity\": \"0\",\n" +
+                "\t\t\"product_quantity_item\": \"0\",\n" +
+                "\t\t\"country_id\": \"128\",\n" +
+                "\t\t\"product_update_time\": \"2016-11-02 11:29:59\",\n" +
+                "\t\t\"country_name\": \"ישראל\",\n" +
+                "\t\t\"country_code\": \"IL\",\n" +
+                "\t\t\"manufacturer_name\": \"קטיף\",\n" +
+                "\t\t\"chain_id\": \"17\",\n" +
+                "\t\t\"sub_chain_id\": \"113\",\n" +
+                "\t\t\"city_id\": \"391\",\n" +
+                "\t\t\"store_area\": \"unknown, unknown\",\n" +
+                "\t\t\"store_type\": \"1\",\n" +
+                "\t\t\"store_name\": \"Tesco \",\n" +
+                "\t\t\"store_code\": \"29\",\n" +
+                "\t\t\"store_address\": \"unknown\",\n" +
+                "\t\t\"store_zip_code\": \"0\",\n" +
+                "\t\t\"store_gps_lat\": \"32.794044\",\n" +
+                "\t\t\"store_gps_lng\": \"34.989571\",\n" +
+                "\t\t\"store_update_time\": \"2018-05-06 06:18:03\",\n" +
+                "\t\t\"store_insert_time\": \"2017-08-08 21:33:42\",\n" +
+                "\t\t\"chain_name\": \"Tesco\",\n" +
+                "\t\t\"chain_code\": \"7290876100000\",\n" +
+                "\t\t\"chain_image\": \"\",\n" +
+                "\t\t\"sub_chain_name\": \"Tesco\",\n" +
+                "\t\t\"sub_chain_code\": \"1\",\n" +
+                "\t\t\"sub_chain_image\": \"fresh_market.jpg\",\n" +
+                "\t\t\"city_name\": \"Jerusalem\",\n" +
+                "\t\t\"city_name2\": \"\",\n" +
+                "\t\t\"city_name3\": \"\",\n" +
+                "\t\t\"city_gps_lat\": \"32.830360\",\n" +
+                "\t\t\"city_gps_lng\": \"34.974339\",\n" +
+                "\t\t\"product_unit_id\": \"2\",\n" +
+                "\t\t\"product_unit_name\": \"קילו גרם\",\n" +
+                "\t\t\"promo\": []\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"store_product_id\": \"15565727\",\n" +
+                "\t\t\"store_id\": \"788\",\n" +
+                "\t\t\"product_id\": \"777\",\n" +
+                "\t\t\"store_product_barcode\": \"9370\",\n" +
+                "\t\t\"store_product_status\": \"1\",\n" +
+                "\t\t\"store_product_price\": \"5.9\",\n" +
+                "\t\t\"store_product_last_price\": \"109\",\n" +
+                "\t\t\"store_product_price_quantity\": \"5.9\",\n" +
+                "\t\t\"store_product_update_time\": \"2018-02-11 06:10:29\",\n" +
+                "\t\t\"store_product_update_time_real\": \"2018-01-30 07:09:00\",\n" +
+                "\t\t\"manufacturer_id\": \"4934\",\n" +
+                "\t\t\"product_name\": \"Green Apples\",\n" +
+                "\t\t\"product_image\": \"\",\n" +
+                "\t\t\"product_description\": \"Apples\",\n" +
+                "\t\t\"product_barcode\": \"7290000000572\",\n" +
+                "\t\t\"product_is_real_barcode\": \"1\",\n" +
+                "\t\t\"product_unit_type\": \"2\",\n" +
+                "\t\t\"product_quantity\": \"0\",\n" +
+                "\t\t\"product_quantity_item\": \"0\",\n" +
+                "\t\t\"country_id\": \"128\",\n" +
+                "\t\t\"product_update_time\": \"2016-11-02 11:29:59\",\n" +
+                "\t\t\"country_name\": \"ישראל\",\n" +
+                "\t\t\"country_code\": \"IL\",\n" +
+                "\t\t\"manufacturer_name\": \"קטיף\",\n" +
+                "\t\t\"chain_id\": \"17\",\n" +
+                "\t\t\"sub_chain_id\": \"113\",\n" +
+                "\t\t\"city_id\": \"391\",\n" +
+                "\t\t\"store_area\": \"unknown, unknown\",\n" +
+                "\t\t\"store_type\": \"1\",\n" +
+                "\t\t\"store_name\": \"Aldi \",\n" +
+                "\t\t\"store_code\": \"29\",\n" +
+                "\t\t\"store_address\": \"unknown\",\n" +
+                "\t\t\"store_zip_code\": \"0\",\n" +
+                "\t\t\"store_gps_lat\": \"32.794044\",\n" +
+                "\t\t\"store_gps_lng\": \"34.989571\",\n" +
+                "\t\t\"store_update_time\": \"2018-05-06 06:18:03\",\n" +
+                "\t\t\"store_insert_time\": \"2017-08-08 21:33:42\",\n" +
+                "\t\t\"chain_name\": \"Aldi\",\n" +
+                "\t\t\"chain_code\": \"7290876100000\",\n" +
+                "\t\t\"chain_image\": \"\",\n" +
+                "\t\t\"sub_chain_name\": \"Aldi\",\n" +
+                "\t\t\"sub_chain_code\": \"1\",\n" +
+                "\t\t\"sub_chain_image\": \"fresh_market.jpg\",\n" +
+                "\t\t\"city_name\": \"חיפה\",\n" +
+                "\t\t\"city_name2\": \"\",\n" +
+                "\t\t\"city_name3\": \"\",\n" +
+                "\t\t\"city_gps_lat\": \"32.830360\",\n" +
+                "\t\t\"city_gps_lng\": \"34.974339\",\n" +
+                "\t\t\"product_unit_id\": \"2\",\n" +
+                "\t\t\"product_unit_name\": \"קילו גרם\",\n" +
+                "\t\t\"promo\": []\n" +
+                "\t}\n" +
+                "]";
     }
 }
