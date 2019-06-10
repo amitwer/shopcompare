@@ -40,7 +40,7 @@ public class SuperGetApi {
         objectMapper = new ObjectMapper();
     }
 
-    public List<Store> getStoresByGps(@NotNull Location location, int radiusInKm) {
+    public List<Store> getStoresByGps(@NotNull Location location, Integer radiusInKm) {
         if (radiusInKm <= 0) {
             throw new IllegalArgumentException("Radius must be non-negative");
         }
